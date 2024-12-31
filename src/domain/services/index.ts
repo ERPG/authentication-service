@@ -1,1 +1,0 @@
-// TypeScript definitions for services
