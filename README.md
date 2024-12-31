@@ -8,9 +8,6 @@ This microservice handles user authentication and authorization using a PostgreS
 - [Setup and Installation](#setup-and-installation)
 - [Environment Variables](#environment-variables)
 - [API Endpoints](#api-endpoints)
-- [Development Workflow](#development-workflow)
-- [Testing](#testing)
-- [Docker](#docker)
 - [Future Improvements](#future-improvements)
 - [Contributing](#contributing)
 - [License](#license)
@@ -53,29 +50,31 @@ cd authentication-service
 pnpm install
 ```
 
-### 3. Setup the Environment Variables
-
-```
-DATABASE_URL=postgresql://user:password@localhost:5432/auth_service
-JWT_SECRET=your_secret_key
-```
-
-### 4. Start dockerized database
+### 3. Start dockerized database
 
 ```
 pnpm run start:db
 ```
 
-### 5. Start dockerized database
+### 4. Start dockerized database
 
 ```
 npx prisma migrate dev
 ```
 
-### 6. Start the Development Server
+### 5. Start the Development Server
 
 ```
 pnpm run dev
+```
+
+---
+
+## Environment Variables
+
+```
+DATABASE_URL=postgresql://user:password@localhost:5432/auth_service
+JWT_SECRET=your_secret_key
 ```
 
 ---
