@@ -105,9 +105,8 @@ Access a protected route using a valid JWT token.
 
 - Implement role-based access control (RBAC).
 - Add password reset functionality.
-- Extend token validation with refresh tokens.
 - Integrate API rate limiting for better security.
-- Improve overall security.
+- Improve overall api security.
 
 ## Contributing
 
