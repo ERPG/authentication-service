@@ -107,6 +107,7 @@ Access a protected route using a valid JWT token.
 - Add password reset functionality.
 - Extend token validation with refresh tokens.
 - Integrate API rate limiting for better security.
+- Improve overall security.
 
 ## Contributing
 

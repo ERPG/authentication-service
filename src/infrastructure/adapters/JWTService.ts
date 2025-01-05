@@ -3,9 +3,11 @@ import { IAuthService } from "../../application/ports/IAuthService";
 import { TokenPayload } from "../../domain/value-objects/TokenPayload";
 
 export class JWTService implements IAuthService {
-  private readonly secret = process.env.JWT_SECRET!;
+  private readonly accessTokenSecret = process.env.JWT_ACCESS_SECRET!;
+  private readonly refreshTokenSecret = process.env.JWT_REFRESH_SECRET!;
 
-  generateToken(payload: TokenPayload, expiresIn: string): string {
+  generateToken(payload: TokenPayload, expiresIn: string, type: "access" | "refresh"): string {
+    const secret = type === "access" ? this.accessTokenSecret : this.refreshTokenSecret;
     return jwt.sign(
       {
         userId: payload.userId,
@@ -13,22 +15,29 @@ export class JWTService implements IAuthService {
         role: payload.role,
         ...payload.claims,
       },
-      this.secret,
+      secret,
       { expiresIn }
     );
   }
 
-  verifyToken(token: string): TokenPayload {
-    const decoded = jwt.verify(token, this.secret);
+  verifyToken(token: string, type: "access" | "refresh"): TokenPayload {
+    const secret = type === "access" ? this.accessTokenSecret : this.refreshTokenSecret;
 
-    if (typeof decoded === "object" && decoded !== null) {
-      return new TokenPayload(
-        decoded.userId,
-        decoded.email,
-        decoded.role,
-        { ...decoded }
-      );
+    try {
+      const decoded = jwt.verify(token, secret);
+
+      if (typeof decoded === "object" && decoded !== null) {
+        return new TokenPayload(
+          decoded.userId,
+          decoded.email,
+          decoded.role,
+          { ...decoded }
+        );
+      }
+      throw new Error("Invalid token payload");
+    } catch (error) {
+      console.error("Token verification failed:", error);
+      throw new Error("Invalid or expired token");
     }
-    throw new Error("Invalid token payload");
   }
 }

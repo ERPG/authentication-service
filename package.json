@@ -10,6 +10,7 @@
     "stop:db": "docker-compose down"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.0.1",
     "@prisma/client": "^6.1.0",
     "bcrypt": "^5.1.1",
     "fastify": "^4.29.0",

@@ -8,9 +8,9 @@ export class LoginUserUseCase {
     private readonly userRepository: IUserRepository,
     private readonly passwordService: PasswordService,
     private readonly authService: IAuthService
-  ) {}
+  ) { }
 
-  async execute(email: string, password: string): Promise<string> {
+  async execute(email: string, password: string): Promise<{ accessToken: string; refreshToken: string }> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
       throw new InvalidCredentialsError();
@@ -24,7 +24,9 @@ export class LoginUserUseCase {
       throw new InvalidCredentialsError();
     }
 
-    const token = this.authService.generateToken({ userId: user.id }, "15m");
-    return token;
+    const accessToken = this.authService.generateToken({ userId: user.id }, "15m", "access");
+    const refreshToken = this.authService.generateToken({ userId: user.id }, "7d", "refresh");
+
+    return { accessToken, refreshToken };
   }
 }
