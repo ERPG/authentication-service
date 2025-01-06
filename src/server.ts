@@ -7,14 +7,21 @@ import { LoginUserUseCase } from "./application/use-cases/LoginUserUserCase";
 import { JWTService } from "./infrastructure/adapters/JWTService";
 import { AuthMiddleware } from "./infrastructure/middlewares/AuthMiddleware";
 import { HealthController } from "./interfaces/http/HealthController";
-import fastifyCookie from "@fastify/cookie";
 import { RefreshTokenUseCase } from "./application/use-cases/RefreshTokenUseCase";
 
-const app: FastifyInstance = fastify();
+import fastifyCookie from "@fastify/cookie";
+import fastifyCors from "@fastify/cors";
 
+const app: FastifyInstance = fastify({ logger: true });
+
+// Register plugins
 app.register(fastifyCookie)
+app.register(fastifyCors, {
+  origin: true,
+  credentials: true,
+});
 
-// dependencies
+// Dependencies
 const userRepository = new PrismaUserRepository();
 const jwtService = new JWTService();
 const passwordService = new PasswordService();
@@ -32,11 +39,19 @@ const authMiddleware = new AuthMiddleware(jwtService);
 const userController = new UserController(registerUserUseCase, loginUserUseCase, authMiddleware, refreshTokenUseCase);
 
 //routes
-userController.registerRoutes(app);
-HealthController.registerRoutes(app);
+app.register((fastifyInstance, _, done) => {
+  userController.registerRoutes(fastifyInstance);
+  HealthController.registerRoutes(fastifyInstance);
+  done();
+}, { prefix: "/api" });
 
-app.listen({ port: 3000 }, () => {
-  console.log("Authentication service running on http://localhost:3000");
+app.listen({ port: 4000 }, (err, address) => {
+  if (err) {
+    console.error('[ERROR]: ', err);
+    app.log.error(err);
+    process.exit(1);
+  }
+  console.log(`Authentication service running on ${address}`);
 });
 
 export type AppInstance = typeof app;
