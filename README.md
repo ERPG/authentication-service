@@ -22,6 +22,7 @@ This microservice handles user authentication and authorization using a PostgreS
 - Prisma ORM for database access.
 - Dockerized PostgreSQL database.
 - Clean architecture with Hexagonal principles.
+- Kafka-based Event-Driven Communication.
 
 ---
 

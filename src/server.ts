@@ -1,3 +1,4 @@
+import './dotenv-config';
 import fastify, { FastifyInstance } from "fastify";
 import { UserController } from "./interfaces/http/UserController";
 import { RegisterUserUseCase } from "./application/use-cases/RegisterUserUseCase";
@@ -11,6 +12,7 @@ import { RefreshTokenUseCase } from "./application/use-cases/RefreshTokenUseCase
 
 import fastifyCookie from "@fastify/cookie";
 import fastifyCors from "@fastify/cors";
+import EventBusService from "./infrastructure/adapters/EventBusService";
 
 const app: FastifyInstance = fastify({ logger: true });
 
@@ -26,9 +28,10 @@ const userRepository = new PrismaUserRepository();
 const jwtService = new JWTService();
 const passwordService = new PasswordService();
 const authService = new JWTService();
+const eventBus = new EventBusService(); 
 
 // Use cases
-const registerUserUseCase = new RegisterUserUseCase(userRepository, passwordService);
+const registerUserUseCase = new RegisterUserUseCase(userRepository, passwordService, eventBus);
 const loginUserUseCase = new LoginUserUseCase(userRepository, passwordService, authService);
 const refreshTokenUseCase = new RefreshTokenUseCase(authService);
 
@@ -45,7 +48,10 @@ app.register((fastifyInstance, _, done) => {
   done();
 }, { prefix: "/api" });
 
-app.listen({ port: 4000 }, (err, address) => {
+// Event bus 
+eventBus.connect();
+
+app.listen({ port: Number(process.env.PORT) }, (err, address) => {
   if (err) {
     console.error('[ERROR]: ', err);
     app.log.error(err);

@@ -1,0 +1,23 @@
+services:
+
+  auth-service:
+    container_name: auth-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      KAFKA_BROKER: ${KAFKA_BROKER}
+    depends_on:
+      auth-service-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    ports:
+      - "4000:4000"
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    external: true

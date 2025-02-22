@@ -5,24 +5,25 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "concurrently \"npm run start:db\" \"ts-node-dev src/server.ts\"",
-    "start:db": "docker-compose up -d auth-service-db",
-    "stop:db": "docker-compose down"
+    "dev": "npm run start:services && ts-node-dev src/server.ts",
+    "start:services": "docker compose -f docker-compose.infrastructure.yml -f docker-compose.service.yml up -d",
+    "stop:services": "docker compose -f docker-compose.infrastructure.yml -f docker-compose.service.yml down"
   },
   "dependencies": {
     "@fastify/cookie": "^6.0.0",
     "@fastify/cors": "^8.5.0",
     "@prisma/client": "^6.1.0",
     "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.7",
     "fastify": "^4.29.0",
     "jsonwebtoken": "^9.0.2",
+    "kafkajs": "^2.2.4",
     "prisma": "^6.1.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^18.19.69",
-    "concurrently": "^9.1.2",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.2"
